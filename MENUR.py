@@ -7,14 +7,18 @@ def single():
     f1 = open('Game_mode.txt', 'w')
     f1.write('1')
     f1.close()
-    root.destroy() 
+    root.destroy()
+
 def versus():
     f1 = open('Game_mode.txt', 'w')
     f1.write('0')
     f1.close()
     root.destroy() 
+    play()
 def reference():
-     g = 1 
+    g = 1 
+
+
 class Menu():
     def __init__(self):
         
