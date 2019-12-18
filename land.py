@@ -188,7 +188,7 @@ class Mobi(pygame.sprite.Sprite):
                     self.p2.rect.right = self.rect.left
                 else:
                     self.p2.rect.left = self.rect.right
-            hit = pygame.sprite.collide_rect(self, self.p2)
+            hit = pygame.sprite.collide_rect_top(self, self.p2)
             if hit:
 
                 if self.rect.y < p2.rect.y:
@@ -251,7 +251,8 @@ class Player(pygame.sprite.Sprite):
         self.speedx = 0
         self.speedy = 0
         self.live = n
-        self.energy = Nuber_of_STRIKE
+        self.energy = 10
+        self.energy_start = 10
         self.shoot_delay = 300
         self.super_shoot_delay = 600
         self.super_energy = 20
@@ -330,13 +331,19 @@ class Player(pygame.sprite.Sprite):
             hits_bullet = pygame.sprite.spritecollide(self, self.bullets1,True, pygame.sprite.collide_circle)
             for hit in hits_bullet:
                 self.xp -= hit.damage
-        self.now = pygame.time.get_ticks()
+        self.now_super_bullet = pygame.time.get_ticks()
         if self.super_energy_start  > self.super_energy:
-            if self.now - self.last_super_shot > self.super_shoot_delay:
+            if self.now_super_bullet - self.last_super_shot > self.super_shoot_delay:
                 if self.super_energy_start > self.super_energy:
-                    self.last_super_shot = self.now
+                    self.last_super_shot = self.now_super_bullet
                     self.super_energy += 1
                     print(self.super_energy)
+        self.now_bullet = pygame.time.get_ticks()
+        if self.energy_start  > self.energy:
+            if self.now_super_bullet - self.last_super_shot > self.super_shoot_delay:
+                if self.energy_start > self.super_energy:
+                    self.last_shot = self.now_bullet
+                    self.energy += 1
 
     def shoot(self):
         if self.energy > 0:
@@ -361,7 +368,7 @@ class Player(pygame.sprite.Sprite):
                     all_sprites.add(bullet)
                     bullets2.add(bullet)
                     objects.add(bullet)
-                    self.energy = self.energy
+                    self.energy = self.energy - 1
 
     def super_shoot(self):
         if self.super_energy == self.super_energy_start:
@@ -385,6 +392,7 @@ class Player(pygame.sprite.Sprite):
         
     def returnXP(self):
         return (int(self.xp))
+
     def returnSuper_time_reload(self):
         return (1)
 
@@ -410,10 +418,10 @@ if Game_mode == 0:
     
     h2 = Health(p2)
     all_sprites.add(h2)
-    r1 = Reload(40,40,p1)
-    all_sprites.add(r1)
-    r2 = Reload(40,40,p2)
-    all_sprites.add(r2)
+    r_super_1 = Reload(40,40,p1)
+    all_sprites.add(r_super_1)
+    r_super_2 = Reload(40,40,p2)
+    all_sprites.add(r_super_2)
     
 if Game_mode == 1:
     p1 = Player(1, WIDTH*3/2, 200)
@@ -439,7 +447,6 @@ def play():
         for i in range(number_of_mobs):
             add_Mobi()
     running = 1
-    
     while running:
         clock.tick(FPS)
         hits = pygame.sprite.groupcollide(players, mobi, 1-shield,  1-shield)
@@ -449,11 +456,9 @@ def play():
         hitts1 = pygame.sprite.groupcollide(mobi, bullets1, True, False)
         if hitts1:
             p1.energy = p1.energy + 1
-
         hitts2 = pygame.sprite.groupcollide(mobi, bullets2, True, True)
         if hitts2:
             p2.energy = p2.energy + 1
-        
         if on == 1:
             for hit in hitts1:
                 add_Mobi()
