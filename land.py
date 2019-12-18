@@ -5,23 +5,23 @@ from tkinter import*
 from MENUR import*
 from reloads import*
 
-Mob_size = 10
+Mob_size = 30
 super_sec = 10
 
-number_of_mobs = 40 # 20000-MAX
+number_of_mobs = 10 # 20000-MAX
 WIDTH = 1300
 on = 1  # Mobi
 mob_lives = 10
 touch = 0
 shield = 0
 Game_mode = 1
-xp = 10
+xp = 100
 WHITE = (255, 255, 255)
 n = 1  # lives_Players
 HEIGHT = 750
 FPS = 50
-Size_B = 6
-Size_A = 6
+Size_B = 20
+Size_A = 20
 s_live = 10
 rnd = random.randrange
 Nuber_of_STRIKE = 6
@@ -99,7 +99,11 @@ class Bullet(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.stripe = stripe
         self.image = pygame.Surface((Size_B, Size_A))
-        self.image.fill(BLUE)
+        self.image = pygame.transform.scale(pygame.image.load('weak_bullet.png'), (Size_B, Size_A))
+        if self.stripe == 1:
+            self.image = pygame.transform.rotate(self.image, -90)
+        if self.stripe == 2 :
+            self.image = pygame.transform.rotate(self.image, 90)
         self.rect = self.image.get_rect()
         self.rect.y = y - Size_B/2
         self.rect.x = x
@@ -130,21 +134,46 @@ class Mobi(pygame.sprite.Sprite):
         self.p2 = p2
         self.speedy = rnd(1, 2)
         self.speedx = rnd(-2, 2)
-        self.type = rnd(0, 1)
-        self.angle()
-
+        self.type = rnd(-1, 1)
+        if self.speedy == 0:
+            self.angle = -90
+        else:
+            self.angle = -90 + math.atan(self.speedx/self.speedy) * 57.3
+        
         if self.type == 0:
-            self.image = pygame.transform.scale(pygame.image.load('spaceship1bl.png'), (80, 80))
-            self.image = pygame.transform.rotate(self.image, 90)
-
-        self.image = pygame.Surface((Mob_size, Mob_size))
-        self.image.fill(RED)
+            self.image = pygame.transform.scale(pygame.image.load('meteor1_stone.png'), (int(Mob_size), int(Mob_size)))
+            self.image = pygame.transform.rotate(self.image, self.angle)
+        else:
+            self.image = pygame.transform.scale(pygame.image.load('meteor2_stone.png'), (Mob_size, int(Mob_size)))
+            self.image = pygame.transform.rotate(self.image, self.angle)
+        '''
+        self.last_update = pygame.time.get_ticks()
+        self.frame = 2
+        self.image = pygame.transform.scale(pygame.image.load('anim_meteor/1.png'), (int(Mob_size*0.7), int(Mob_size*0.7*0.7)))
+        self.image = pygame.transform.rotate(self.image, self.angle)
+        '''
+        #self.animate()
         self.rect = self.image.get_rect()
         self.rect.y = rnd(-580, 0)
         self.rect.x = rnd(10, 1360)
+        
 
         self.damage = 1
         self.touch = touch
+        
+    
+    def animate(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_update > 1000: 
+            self.last_update = now
+            image_name = 'anim_meteor/' + str(self.frame) + '.png'
+            self.image = pygame.transform.scale(pygame.image.load(image_name), (int(Mob_size), int(Mob_size*0.7)))
+            self.image = pygame.transform.rotate(self.image, self.angle) 
+            if self.frame == 5:
+                self.frame = 1
+            else:
+                self.frame+=1
+
 
     def update(self):
         self.rect.y = self.rect.y + self.speedy
@@ -195,6 +224,7 @@ class Mobi(pygame.sprite.Sprite):
                     self.p2.rect.top = self.rect.bottom
                 else:
                     self.p2.rect.bottom = self.rect.top
+        #self.animate()
 
 
 
@@ -238,7 +268,7 @@ class Player(pygame.sprite.Sprite):
         self.y = y
         self.image = None
         if stripe == 1:
-            self.image = pygame.transform.scale(pygame.image.load('spaceship1bl.png'), (80, 80))
+            self.image = pygame.transform.scale(pygame.image.load('spaceship1.png'), (80, 80))
             self.image = pygame.transform.rotate(self.image, 90)
         if stripe == 2:
             self.image = pygame.transform.scale(pygame.image.load('spaceship2.png'), (64, 64))
