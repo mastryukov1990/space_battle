@@ -1,6 +1,6 @@
 import pygame
 class Buttom(pygame.sprite.Sprite):
-    def __init__(self, x, y, color, centerx, centery, typi):
+    def __init__(self, x, y, color, centerx, centery):
         pygame.sprite.Sprite.__init__(self)
         self.size_x = x
         self.size_y = y
@@ -12,7 +12,7 @@ class Buttom(pygame.sprite.Sprite):
         self.image.fill(self.color)
         self.rect.y = centerx
         self.rect.x = centery
-        self.typi = typi
+        
     
 
     def single(self):
@@ -40,7 +40,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Menu")
 clock = pygame.time.Clock()
 all_sprites = pygame.sprite.Group()
-b = Buttom(30,30, GREEN, 100, 100,single)
+b = Buttom(30,30, GREEN, 100, 100)
 running = 1
 all_sprites.add(b)
 while running == 1:
@@ -51,7 +51,7 @@ while running == 1:
     all_sprites.update()
     
     # Рендеринг
-    screen.fill(BLACK)
+    screen.fill(GREEN)
     all_sprites.draw(screen)
     # После отрисовки всего, переворачиваем экран
     pygame.display.flip()

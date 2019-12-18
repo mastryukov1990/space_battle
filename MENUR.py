@@ -14,7 +14,7 @@ def versus():
     f1.write('0')
     f1.close()
     root.destroy() 
-    play()
+    
 def reference():
     g = 1 
 
