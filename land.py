@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 from tkinter import*
 from MENUR import*
 from reloads import*
@@ -127,13 +128,21 @@ class Mobi(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.p1 = p1
         self.p2 = p2
+        self.speedy = rnd(1, 2)
+        self.speedx = rnd(-2, 2)
+        self.type = rnd(0, 1)
+        self.angle()
+
+        if self.type == 0:
+            self.image = pygame.transform.scale(pygame.image.load('spaceship1bl.png'), (80, 80))
+            self.image = pygame.transform.rotate(self.image, 90)
+
         self.image = pygame.Surface((Mob_size, Mob_size))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.rect.y = rnd(-580, 0)
         self.rect.x = rnd(10, 1360)
-        self.speedy = rnd(1, 2)
-        self.speedx = rnd(-2, 2)
+
         self.damage = 1
         self.touch = touch
 
@@ -227,11 +236,13 @@ class Player(pygame.sprite.Sprite):
         self.stripe = stripe
         self.x = x
         self.y = y
-        self.image = pygame.Surface((50, 50))
+        self.image = None
         if stripe == 1:
-            self.image.fill(GREEN)
+            self.image = pygame.transform.scale(pygame.image.load('spaceship1bl.png'), (80, 80))
+            self.image = pygame.transform.rotate(self.image, 90)
         if stripe == 2:
-            self.image.fill(BLUE)
+            self.image = pygame.transform.scale(pygame.image.load('spaceship2.png'), (64, 64))
+            self.image = pygame.transform.rotate(self.image, -90)
         self.super_sec = super_sec
         self.rect = self.image.get_rect()
         self.rect.center = (self.x / 2, self.y / 2)
@@ -420,7 +431,7 @@ if Game_mode == 1:
 
 def play():
     pygame.init()
-    pygame.mixer.init()
+    #dpygame.mixer.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT), flags = pygame.FULLSCREEN)
     pygame.display.set_caption("My Game")
     clock = pygame.time.Clock()
