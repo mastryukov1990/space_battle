@@ -1,5 +1,5 @@
-from tkinter import*
-from button import*
+from tkinter import Tk, Button
+
 Game_mode = 0
 
 
@@ -17,7 +17,6 @@ def versus():
     
 def reference():
     g = 1 
-
 
 class Menu():
     def __init__(self):

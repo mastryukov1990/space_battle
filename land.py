@@ -1,13 +1,17 @@
 import pygame
 import random
-from tkinter import*
-from MENUR import*
-from reloads import*
-
-Mob_size = 10
+import tkinter 
+import MENUR
+from reloads import  Reload, Reload_Bullet
+import math
+from os import path
+Mob_size = 20
 super_sec = 10
 
-number_of_mobs = 10 # 20000-MAX
+background = pygame.image.load('star_field.png')
+meteor = {}
+background_rect = background.get_rect()
+number_of_mobs = 30 # 20000-MAX
 WIDTH = 1300
 on = 1  # Mobi
 mob_lives = 10
@@ -15,13 +19,13 @@ super_bullet_damage = 5
 touch = 0
 shield = 0
 Game_mode = 1
-xp = 10
+xp = 11
 WHITE = (255, 255, 255)
 n = 1  # lives_Players
 HEIGHT = 750
 FPS = 50
-Size_B = 6
-Size_A = 6
+Size_B = 12
+Size_A = 12
 s_live = 10
 rnd = random.randrange
 Nuber_of_STRIKE = 6
@@ -102,7 +106,13 @@ class Bullet(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.stripe = stripe
         self.image = pygame.Surface((Size_B, Size_A))
-        self.image.fill(BLUE)
+         
+        if self.stripe == 1:	
+            self.image = pygame.transform.rotate(pygame.image.load('weak_bullet.png'), -90)
+            self.image = pygame.transform.scale(self.image, (Size_B*2, 2*Size_A))	 	
+        if self.stripe == 2 :	
+            self.image = pygame.transform.rotate(self.image, 90)
+            self.image = pygame.transform.scale(pygame.image.load('meteor_bright.png'), (Size_B*2, Size_A*2))	
         self.rect = self.image.get_rect()
         self.rect.y = y - Size_B/2
         self.rect.x = x
@@ -131,14 +141,38 @@ class Mobi(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.p1 = p1
         self.p2 = p2
-        self.image = pygame.Surface((Mob_size, Mob_size))
-        self.image.fill(RED)
-        self.rect = self.image.get_rect()
-        self.rect.y = rnd(-80, 0)
-        self.rect.x = rnd(10, WIDTH - 100)
+        self.type = rnd(-1, 1)
         self.speedy = rnd(1, 2)
         self.speedx = rnd(-2, 2)
-        self.damage = 1
+        self.damage = 1	
+        self.Mob_size = rnd(15,30)
+        if self.speedy == 0:	
+            self.angle = -90	
+        else:	
+            self.angle = -90 + math.atan(self.speedx/self.speedy) * 57.3	
+
+        if self.type == 0:	
+            self.image = pygame.transform.scale(pygame.image.load('meteor1_stone.png'), (int(self.Mob_size), int(self.Mob_size)))	
+            self.image = pygame.transform.rotate(self.image, self.angle)	
+        if self.type == 1:
+            self.image = pygame.transform.scale(pygame.image.load('meteor2_stone.png'), (self.Mob_size, int(self.Mob_size)))	
+            self.image = pygame.transform.rotate(self.image, self.angle)	
+        if self.type == -1:
+            self.image = pygame.transform.scale(pygame.image.load('meteor2_stone.png'), (self.Mob_size, int(self.Mob_size)))	
+            self.image = pygame.transform.rotate(self.image, self.angle)
+        '''	
+        self.last_update = pygame.time.get_ticks()	
+        self.frame = 2	
+        self.image = pygame.transform.scale(pygame.image.load('anim_meteor/1.png'), (int(Mob_size*0.7), int(Mob_size*0.7*0.7)))	
+        self.image = pygame.transform.rotate(self.image, self.angle)	
+        '''	
+        
+        self.rect = self.image.get_rect()	
+        self.rect.y = rnd(-580, 0)	
+        self.rect.x = rnd(10, 1360)	
+        self.last_update = pygame.time.get_ticks()
+        self.frame = '1'
+        
         self.touch = touch
 
     def update(self):
@@ -188,6 +222,17 @@ class Mobi(pygame.sprite.Sprite):
                     self.p2.rect.top = self.rect.bottom
                 else:
                     self.p2.rect.bottom = self.rect.top
+        #self.animate()
+    def animate(self):	
+        now = pygame.time.get_ticks()	
+        if now - self.last_update > 300: 	
+            self.last_update = now	
+            self.image = meteor[self.frame]
+            self.image = pygame.transform.rotate(self.image, self.angle) 	
+            if self.frame == '5':	
+                self.frame = '1'	
+            else:	
+                self.frame = str(int(self.frame) + 1)
 class Shield(pygame.sprite.Sprite):
     def __init__(self, x, y, p):
         pygame.sprite.Sprite.__init__(self)
@@ -265,16 +310,18 @@ class Player(pygame.sprite.Sprite):
         self.stripe = stripe
         self.x = x
         self.y = y
-        self.image = pygame.Surface((50, 50))
-        if stripe == 1:
-            self.image.fill(GREEN)
-        if stripe == 2:
-            self.image.fill(BLUE)
+        self.image = None	  
+        if stripe == 1:	        
+            self.image = pygame.transform.scale(pygame.image.load('spaceship1.png'), (80, 80))	           
+            self.image = pygame.transform.rotate(self.image, 90)	
+        if stripe == 2:	        
+            self.image = pygame.transform.scale(pygame.image.load('spaceship2.png'), (80, 80))	         
+            self.image = pygame.transform.rotate(self.image, -90)
         self.super_sec = super_sec
         self.rect = self.image.get_rect()
         self.rect.center = (self.x / 2, self.y / 2)
-        self.Vx = 5
-        self.Vy = 5
+        self.Vx = 6
+        self.Vy = 6
         self.speedx = 0
         self.speedy = 0
         self.live = n
@@ -479,8 +526,8 @@ if Game_mode == 1:
 
 def play():
     pygame.init()
-    pygame.mixer.init()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), flags = pygame.FULLSCREEN)
     pygame.display.set_caption("My Game")
     clock = pygame.time.Clock()
     if on == 1:
@@ -493,7 +540,7 @@ def play():
         if hits and shield == 0:
             running = False
             add_Mobi()
-        
+       
         # Ввод процесса (события)
         for event in pygame.event.get():
             # check for closing window
@@ -506,6 +553,7 @@ def play():
         
         all_sprites.update()
         screen.fill(BLACK)
+        screen.blit(background, background_rect)
         all_sprites.draw(screen)
         pygame.display.flip()
         
