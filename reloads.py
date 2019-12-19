@@ -9,7 +9,7 @@ class Reload(pygame.sprite.Sprite):
             self.x = x
             self.y = y
         if self.p.stripe == 1:
-            self.x = 1200 - x
+            self.x = 1100 - x
             self.y = y
 
         self.image = pygame.Surface((self.width, self.height))
