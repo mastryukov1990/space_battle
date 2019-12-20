@@ -1,21 +1,21 @@
-from tkinter import *
-
-root = Tk()
-root.title("settings")
-
-Label(text="Имя:").grid(row=0, column=0)
-table_name = Entry(width=30)
-table_name.grid(row=0, column=1, columnspan=3)
-
-Label(text="Mob_size:").grid(row=1, column=0)
-table_column = Spinbox(width=7, from_=1, to=50)
-table_column.grid(row=1, column=1)
-Label(text="number:").grid(row=1, column=2)
-table_row = Spinbox(width=10, from_=1, to=100)
-table_row.grid(row=0, column=4)
-
-Button(text="Назад").grid(row=2, column=0)
-Button(text="Применить").grid(row=2, column=2)
-table_row.grid(row=2, column=3)
-
-root.mainloop()
+import pygame
+all_sprites = pygame.sprite.Group()
+FPS = 50
+BLACK = (255, 0, 0)
+def create_menu():
+    pygame.init()
+    screen = pygame.display.set_mode((0, 0), flags = pygame.FULLSCREEN)
+    pygame.display.set_caption("My Game")
+    clock = pygame.time.Clock()
+    running = 1
+    while running:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        all_sprites.update()
+        screen.fill(BLACK)
+        all_sprites.draw(screen)
+        pygame.display.flip()
+    pygame.quit()
+create_menu()

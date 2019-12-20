@@ -5,6 +5,7 @@ import MENUR
 from reloads import Reload, Reload_Bullet
 import math
 from os import path
+
 Mob_size = 20
 super_sec = 10
 
@@ -31,17 +32,17 @@ rnd = random.randrange
 Nuber_of_STRIKE = 6
 # Задаю цвета
 all_parametrs = [
-            Mob_size,
-            super_sec,
-            number_of_mobs,
-            on,
-            mob_lives,
-            touch,
-            shield,
-            Game_mode,
-            n,
-            Nuber_of_STRIKE
-            ]
+    Mob_size,
+    super_sec,
+    number_of_mobs,
+    on,
+    mob_lives,
+    touch,
+    shield,
+    Game_mode,
+    n,
+    Nuber_of_STRIKE
+]
 f = open('Game_mode.txt')
 Game_mode = int(f.read())
 
@@ -76,7 +77,7 @@ class SuperBullet(pygame.sprite.Sprite):
         self.image = pygame.Surface((self.s_sizeB, self.s_sizeA))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
-        self.rect.y = y - self.s_sizeA/2
+        self.rect.y = y - self.s_sizeA / 2
         self.rect.x = x
         self.Vy = 5
         self.Vx = 5
@@ -93,11 +94,11 @@ class SuperBullet(pygame.sprite.Sprite):
             if self.rect.right > WIDTH:
                 self.kill()
         hit_objects = pygame.sprite.spritecollide(
-                                            self,
-                                            objects,
-                                            True,
-                                            pygame.sprite.collide_rect
-                                            )
+            self,
+            objects,
+            True,
+            pygame.sprite.collide_rect
+        )
 
         for hit in hit_objects:
             if hit != self:
@@ -114,16 +115,16 @@ class Bullet(pygame.sprite.Sprite):
 
         if self.stripe == 1:
             self.image = pygame.transform.rotate(pygame.image.load('weak_bullet.png'), -90)
-            self.image = pygame.transform.scale(self.image, (Size_B*2, 2*Size_A))
+            self.image = pygame.transform.scale(self.image, (Size_B * 2, 2 * Size_A))
         if self.stripe == 2:
             self.image = pygame.transform.rotate(self.image, 90)
             self.image = pygame.transform.scale(pygame.image.load('meteor_bright.png'),
-                                                    (
-                                                    Size_B*2,
-                                                    Size_A*2)
-                                                    )
+                                                (
+                                                    Size_B * 2,
+                                                    Size_A * 2)
+                                                )
         self.rect = self.image.get_rect()
-        self.rect.y = y - Size_B/2
+        self.rect.y = y - Size_B / 2
         self.rect.x = x
         self.live = 1
         self.Vx = 10
@@ -158,16 +159,19 @@ class Mobi(pygame.sprite.Sprite):
         if self.speedy == 0:
             self.angle = -90
         else:
-            self.angle = -90 + math.atan(self.speedx/self.speedy) * 57.3
+            self.angle = -90 + math.atan(self.speedx / self.speedy) * 57.3
 
         if self.type == 0:
-            self.image = pygame.transform.scale(pygame.image.load('meteor1_stone.png'), (int(self.Mob_size), int(self.Mob_size)))
+            self.image = pygame.transform.scale(pygame.image.load('meteor1_stone.png'),
+                                                (int(self.Mob_size), int(self.Mob_size)))
             self.image = pygame.transform.rotate(self.image, self.angle)
         if self.type == 1:
-            self.image = pygame.transform.scale(pygame.image.load('meteor2_stone.png'), (self.Mob_size, int(self.Mob_size)))
+            self.image = pygame.transform.scale(pygame.image.load('meteor2_stone.png'),
+                                                (self.Mob_size, int(self.Mob_size)))
             self.image = pygame.transform.rotate(self.image, self.angle)
         if self.type == -1:
-            self.image = pygame.transform.scale(pygame.image.load('meteor2_stone.png'), (self.Mob_size, int(self.Mob_size)))
+            self.image = pygame.transform.scale(pygame.image.load('meteor2_stone.png'),
+                                                (self.Mob_size, int(self.Mob_size)))
             self.image = pygame.transform.rotate(self.image, self.angle)
         '''
         self.last_update = pygame.time.get_ticks()
@@ -267,21 +271,21 @@ class Shield(pygame.sprite.Sprite):
             if self.rect.left < 0:
                 self.kill()
             hit_objects = pygame.sprite.spritecollide(
-                                                    self,
-                                                    bullets2,
-                                                    True,
-                                                    pygame.sprite.collide_rect
-                                                    )
+                self,
+                bullets2,
+                True,
+                pygame.sprite.collide_rect
+            )
 
         if self.stripe == 2:
             self.rect.x = self.rect.x + self.Vx
             if self.rect.right > WIDTH:
                 self.kill()
             hit_objects = pygame.sprite.spritecollide(
-                                                    self,
-                                                    bullets1,
-                                                    True,
-                                                    pygame.sprite.collide_rect)
+                self,
+                bullets1,
+                True,
+                pygame.sprite.collide_rect)
 
         for hit in hit_objects:
             if hit != self:
@@ -319,12 +323,12 @@ class Health(pygame.sprite.Sprite):
     def scaling(self):
         if self.p.xp > 0:
             self.image = pygame.transform.scale(
-                                                self.image,
-                                                (
-                                                self.p.xp * self.a,
-                                                self.height
-                                                )
-                                                )
+                self.image,
+                (
+                    self.p.xp * self.a,
+                    self.height
+                )
+            )
 
 
 class Player(pygame.sprite.Sprite):
@@ -374,8 +378,8 @@ class Player(pygame.sprite.Sprite):
         if self.stripe == 1:
             if self.rect.right > WIDTH:
                 self.rect.right = WIDTH
-            if self.rect.left < WIDTH/2:
-                self.rect.left = WIDTH/2
+            if self.rect.left < WIDTH / 2:
+                self.rect.left = WIDTH / 2
             if keystate[pygame.K_LEFT]:
                 self.speedx = -5
             if keystate[pygame.K_UP]:
@@ -389,8 +393,8 @@ class Player(pygame.sprite.Sprite):
             if keystate[pygame.K_RCTRL]:
                 p1.super_shoot()
         if self.stripe == 2:
-            if self.rect.right > WIDTH/2:
-                self.rect.right = WIDTH/2
+            if self.rect.right > WIDTH / 2:
+                self.rect.right = WIDTH / 2
             if self.rect.left < 0:
                 self.rect.left = 0
             if keystate[pygame.K_a]:
@@ -448,10 +452,10 @@ class Player(pygame.sprite.Sprite):
                 if now - self.last_shot > self.shoot_delay:
                     self.last_shot = now
                     bullet = Bullet(
-                                self.rect.left - 8,
-                                self.rect.centery,
-                                self.stripe
-                                )
+                        self.rect.left - 8,
+                        self.rect.centery,
+                        self.stripe
+                    )
                     all_sprites.add(bullet)
                     bullets1.add(bullet)
                     objects.add(bullet)
@@ -474,10 +478,10 @@ class Player(pygame.sprite.Sprite):
                 if now - self.last_super_shotBullet > self.shoot_delay:
                     self.last_super_shotBullet = now
                     s_bullet1 = SuperBullet(
-                                        self.rect.left - 8,
-                                        self.rect.centery,
-                                        self.stripe
-                                        )
+                        self.rect.left - 8,
+                        self.rect.centery,
+                        self.stripe
+                    )
                     all_sprites.add(s_bullet1)
                     bullets1.add(s_bullet1)
                     self.super_energy = self.super_energy - s_bullet1.damage
@@ -485,10 +489,10 @@ class Player(pygame.sprite.Sprite):
                 if now - self.last_shot > self.shoot_delay:
                     self.last_shot = now
                     s_bullet2 = SuperBullet(
-                                        self.rect.right + 8,
-                                        self.rect.centery,
-                                        self.stripe
-                                        )
+                        self.rect.right + 8,
+                        self.rect.centery,
+                        self.stripe
+                    )
                     all_sprites.add(s_bullet2)
                     bullets2.add(s_bullet2)
                     self.super_energy = self.super_energy - s_bullet2.damage
@@ -499,6 +503,7 @@ class Player(pygame.sprite.Sprite):
     def returnSuper_time_reload(self):
         return (1)
 
+
 bullets1 = pygame.sprite.Group()
 bullets2 = pygame.sprite.Group()
 
@@ -508,11 +513,11 @@ objects = pygame.sprite.Group()
 players = pygame.sprite.Group()
 
 if Game_mode == 0:
-    p1 = Player(1, WIDTH * 3/2, 200)
+    p1 = Player(1, WIDTH * 3 / 2, 200)
     all_sprites.add(p1)
     players.add(p1)
     all_sprites.add(p1)
-    p2 = Player(2, WIDTH/2, 600)
+    p2 = Player(2, WIDTH / 2, 600)
     all_sprites.add(p2)
     players.add(p2)
     all_sprites.add(p2)
@@ -529,11 +534,11 @@ if Game_mode == 0:
     r2 = Reload_Bullet(90, 50, p2)
     all_sprites.add(r2)
 if Game_mode == 1:
-    p1 = Player(1, WIDTH*3/2, 200)
+    p1 = Player(1, WIDTH * 3 / 2, 200)
     all_sprites.add(p1)
     players.add(p1)
     all_sprites.add(p1)
-    p2 = Player(1, WIDTH*3/2, 200)
+    p2 = Player(1, WIDTH * 3 / 2, 200)
     all_sprites.add(p2)
     players.add(p2)
     all_sprites.add(p2)
@@ -543,7 +548,7 @@ if Game_mode == 1:
 def play():
     pygame.init()
 
-    screen = pygame.display.set_mode((WIDTH, HEIGHT), flags = pygame.FULLSCREEN)
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=pygame.FULLSCREEN)
     pygame.display.set_caption("My Game")
     clock = pygame.time.Clock()
     if on == 1:
@@ -552,7 +557,7 @@ def play():
     running = 1
     while running:
         clock.tick(FPS)
-        hits = pygame.sprite.groupcollide(players, mobi, 1-shield,  1-shield)
+        hits = pygame.sprite.groupcollide(players, mobi, 1 - shield, 1 - shield)
         if hits and shield == 0:
             running = False
             add_Mobi()
@@ -567,4 +572,6 @@ def play():
         all_sprites.draw(screen)
         pygame.display.flip()
     pygame.quit()
+
+
 play()
