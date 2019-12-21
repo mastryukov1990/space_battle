@@ -1,47 +1,38 @@
 import pygame
 import random
-import tkinter
-import MENUR
-from reloads import Reload, Reload_Bullet
+
+from reloads import Reload_Super_Energy, Reload_Bullets
 import math
 from os import path
 
 Mob_size = 20
-super_sec = 10
 
 background = pygame.image.load('star_field.png')
-meteor = {}
+
 background_rect = background.get_rect()
 number_of_mobs = 30  # 20000-MAX
 WIDTH = 1300
-on = 1  # Mobi
+on = 1  # Mobs
 mob_lives = 10
 super_bullet_damage = 5
-touch = 0
-shield = 0
+
 Game_mode = 1
-xp = 11
+player_xp = 11
 WHITE = (255, 255, 255)
-n = 1  # lives_Players
 HEIGHT = 750
 FPS = 50
-Size_B = 12
-Size_A = 12
-s_live = 10
+Bullet_size_X = 12
+Bullet_size_Y = 12
 rnd = random.randrange
-Nuber_of_STRIKE = 6
+Number_of_STRIKE = 6
 # Задаю цвета
 all_parametrs = [
     Mob_size,
-    super_sec,
     number_of_mobs,
     on,
     mob_lives,
-    touch,
-    shield,
     Game_mode,
-    n,
-    Nuber_of_STRIKE
+    Number_of_STRIKE
 ]
 f = open('Game_mode.txt')
 Game_mode = int(f.read())
@@ -53,10 +44,10 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 
-def add_Mobi():
-    m = Mobi(p1, p2)
+def add_Mob():
+    m = Mob(p1, p2)
     all_sprites.add(m)
-    mobi.add(m)
+    mobs.add(m)
     objects.add(m)
 
 
@@ -72,16 +63,16 @@ class SuperBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, stripe):
         pygame.sprite.Sprite.__init__(self)
         self.stripe = stripe
-        self.s_sizeB = 8
-        self.s_sizeA = 60
-        self.image = pygame.Surface((self.s_sizeB, self.s_sizeA))
+        self.size_X = 8
+        self.size_Y = 60
+        self.image = pygame.Surface((self.size_X, self.size_Y))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
-        self.rect.y = y - self.s_sizeA / 2
+        self.rect.y = y - self.size_Y / 2
         self.rect.x = x
         self.Vy = 5
         self.Vx = 5
-        self.s_live = 5
+        self.live = 5
         self.damage = super_bullet_damage
 
     def update(self):
@@ -102,8 +93,8 @@ class SuperBullet(pygame.sprite.Sprite):
 
         for hit in hit_objects:
             if hit != self:
-                self.s_live = self.s_live - hit.damage
-        if self.s_live < 0:
+                self.live = self.live - hit.damage
+        if self.live < 0:
             self.kill()
 
 
@@ -111,20 +102,20 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, stripe):
         pygame.sprite.Sprite.__init__(self)
         self.stripe = stripe
-        self.image = pygame.Surface((Size_B, Size_A))
+        self.image = pygame.Surface((Bullet_size_X, Bullet_size_Y))
 
         if self.stripe == 1:
             self.image = pygame.transform.rotate(pygame.image.load('weak_bullet.png'), -90)
-            self.image = pygame.transform.scale(self.image, (Size_B * 2, 2 * Size_A))
+            self.image = pygame.transform.scale(self.image, (Bullet_size_X * 2, 2 * Bullet_size_Y))
         if self.stripe == 2:
             self.image = pygame.transform.rotate(self.image, 90)
             self.image = pygame.transform.scale(pygame.image.load('meteor_bright.png'),
                                                 (
-                                                    Size_B * 2,
-                                                    Size_A * 2)
+                                                    Bullet_size_X * 2,
+                                                    Bullet_size_Y * 2)
                                                 )
         self.rect = self.image.get_rect()
-        self.rect.y = y - Size_B / 2
+        self.rect.y = y - Bullet_size_X / 2
         self.rect.x = x
         self.live = 1
         self.Vx = 10
@@ -146,7 +137,7 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 
 
-class Mobi(pygame.sprite.Sprite):
+class Mob(pygame.sprite.Sprite):
     def __init__(self, p1, p2):
         pygame.sprite.Sprite.__init__(self)
         self.p1 = p1
@@ -186,8 +177,6 @@ class Mobi(pygame.sprite.Sprite):
         self.last_update = pygame.time.get_ticks()
         self.frame = '1'
 
-        self.touch = touch
-
     def update(self):
         self.rect.y = self.rect.y + self.speedy
         self.rect.x = self.rect.x + self.speedx
@@ -201,40 +190,10 @@ class Mobi(pygame.sprite.Sprite):
             self.damage -= hit.damage
         if self.rect.y > HEIGHT or self.rect.x > WIDTH or self.rect.x < 0:
             self.kill()
-            add_Mobi()
+            add_Mob()
         if self.damage <= 0:
             self.kill()
-            add_Mobi()
-        if touch:
-
-            hit = pygame.sprite.collide_rect(self, self.p1)
-
-            if hit:
-                if self.rect.left > p1.rect.right:
-                    self.p1.rect.right = self.rect.left
-                elif self.rect.right < p1.rect.left:
-                    self.p1.rect.left = self.rect.right
-            hit = pygame.sprite.collide_rect(self, self.p1)
-            if hit:
-
-                if self.rect.y < p1.rect.y:
-                    self.p1.rect.top = self.rect.bottom
-                else:
-                    self.p1.rect.bottom = self.rect.top
-            hit = pygame.sprite.collide_rect(self, self.p2)
-
-            if hit:
-                if self.rect.x > p2.rect.x:
-                    self.p2.rect.right = self.rect.left
-                else:
-                    self.p2.rect.left = self.rect.right
-            hit = pygame.sprite.collide_rect_top(self, self.p2)
-            if hit:
-
-                if self.rect.y < p2.rect.y:
-                    self.p2.rect.top = self.rect.bottom
-                else:
-                    self.p2.rect.bottom = self.rect.top  # self.animate()
+            add_Mob()
 
     def animate(self):
         now = pygame.time.get_ticks()
@@ -262,7 +221,7 @@ class Shield(pygame.sprite.Sprite):
         self.rect.x = int(x - self.s_sizeA / 2)
         self.Vy = 0
         self.Vx = 0
-        self.s_live = self.p.super_energy
+        self.live = self.p.super_energy
         self.damage = 5
 
     def update(self):
@@ -289,8 +248,8 @@ class Shield(pygame.sprite.Sprite):
 
         for hit in hit_objects:
             if hit != self:
-                self.s_live = self.s_live - hit.damage
-        if self.s_live < 0:
+                self.live = self.live - hit.damage
+        if self.live < 0:
             self.kill()
 
 
@@ -321,11 +280,11 @@ class Health(pygame.sprite.Sprite):
         self.scaling()
 
     def scaling(self):
-        if self.p.xp > 0:
+        if self.p.player_xp > 0:
             self.image = pygame.transform.scale(
                 self.image,
                 (
-                    self.p.xp * self.a,
+                    self.p.player_xp * self.a,
                     self.height
                 )
             )
@@ -344,14 +303,13 @@ class Player(pygame.sprite.Sprite):
         if stripe == 2:
             self.image = pygame.transform.scale(pygame.image.load('spaceship2.png'), (80, 80))
             self.image = pygame.transform.rotate(self.image, -90)
-        self.super_sec = super_sec
+
         self.rect = self.image.get_rect()
-        self.rect.center = (self.x / 2, self.y / 2)
+        self.rect.center = (int(self.x / 2), int(self.y / 2))
         self.Vx = 6
         self.Vy = 6
         self.speedx = 0
         self.speedy = 0
-        self.live = n
         self.energy = 15
         self.energy_start = 10
         self.shoot_delay = 300
@@ -363,10 +321,10 @@ class Player(pygame.sprite.Sprite):
         self.last_super_shotBullet = pygame.time.get_ticks()
         self.go = 300
         self.delay = 1000
-        self.mobs = mobi
+        self.mobs = mobs
         self.last_go = pygame.time.get_ticks()
-        self.xp = xp
-        self.start_xp = xp
+        self.player_xp = player_xp
+        self.start_xp = player_xp
         self.bullets2 = bullets2
         self.bullets1 = bullets1
         self.shot = pygame.time.get_ticks()
@@ -421,17 +379,17 @@ class Player(pygame.sprite.Sprite):
             self.rect.top = 0
         hits_mobs = pygame.sprite.spritecollide(self, self.mobs, True, pygame.sprite.collide_circle)
         for hit in hits_mobs:
-            self.xp -= hit.damage
-            add_Mobi()
+            self.player_xp -= hit.damage
+            add_Mob()
         if self.stripe == 1:
             hits_bullet = pygame.sprite.spritecollide(self, self.bullets2, True, pygame.sprite.collide_circle)
             for hit in hits_bullet:
-                self.xp -= hit.damage
+                self.player_xp -= hit.damage
 
         if self.stripe == 2:
             hits_bullet = pygame.sprite.spritecollide(self, self.bullets1, True, pygame.sprite.collide_circle)
             for hit in hits_bullet:
-                self.xp -= hit.damage
+                self.player_xp -= hit.damage
         self.now_super_bullet = pygame.time.get_ticks()
         if self.super_energy_start > self.super_energy:
             if self.now_super_bullet - self.last_super_shot > self.super_shoot_delay:
@@ -498,51 +456,41 @@ class Player(pygame.sprite.Sprite):
                     self.super_energy = self.super_energy - s_bullet2.damage
 
     def returnXP(self):
-        return (int(self.xp))
+        return (int(self.player_xp))
 
     def returnSuper_time_reload(self):
         return (1)
 
 
+# Creating_groups
 bullets1 = pygame.sprite.Group()
 bullets2 = pygame.sprite.Group()
 
-mobi = pygame.sprite.Group()
+mobs = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 objects = pygame.sprite.Group()
 players = pygame.sprite.Group()
 
-if Game_mode == 0:
-    p1 = Player(1, WIDTH * 3 / 2, 200)
-    all_sprites.add(p1)
-    players.add(p1)
-    all_sprites.add(p1)
-    p2 = Player(2, WIDTH / 2, 600)
-    all_sprites.add(p2)
-    players.add(p2)
-    all_sprites.add(p2)
-    h1 = Health(p1)
-    all_sprites.add(h1)
-    h2 = Health(p2)
-    all_sprites.add(h2)
-    r_super_1 = Reload(40, 40, p1)
-    all_sprites.add(r_super_1)
-    r_super_2 = Reload(90, 40, p2)
-    all_sprites.add(r_super_2)
-    r1 = Reload_Bullet(40, 50, p1)
-    all_sprites.add(r1)
-    r2 = Reload_Bullet(90, 50, p2)
-    all_sprites.add(r2)
-if Game_mode == 1:
-    p1 = Player(1, WIDTH * 3 / 2, 200)
-    all_sprites.add(p1)
-    players.add(p1)
-    all_sprites.add(p1)
-    p2 = Player(1, WIDTH * 3 / 2, 200)
-    all_sprites.add(p2)
-    players.add(p2)
-    all_sprites.add(p2)
-    h1 = Health(p1)
+p1 = Player(1, WIDTH * 3 / 2, 200)
+all_sprites.add(p1)
+players.add(p1)
+all_sprites.add(p1)
+p2 = Player(2, WIDTH / 2, 600)
+all_sprites.add(p2)
+players.add(p2)
+all_sprites.add(p2)
+h1 = Health(p1)
+all_sprites.add(h1)
+h2 = Health(p2)
+all_sprites.add(h2)
+r_super_1 = Reload_Super_Energy(40, 40, p1)
+all_sprites.add(r_super_1)
+r_super_2 = Reload_Super_Energy(90, 40, p2)
+all_sprites.add(r_super_2)
+r1 = Reload_Bullets(40, 50, p1)
+all_sprites.add(r1)
+r2 = Reload_Bullets(90, 50, p2)
+all_sprites.add(r2)
 
 
 def play():
@@ -553,18 +501,15 @@ def play():
     clock = pygame.time.Clock()
     if on == 1:
         for i in range(number_of_mobs):
-            add_Mobi()
+            add_Mob()
     running = 1
     while running:
         clock.tick(FPS)
-        hits = pygame.sprite.groupcollide(players, mobi, 1 - shield, 1 - shield)
-        if hits and shield == 0:
-            running = False
-            add_Mobi()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        if p1.xp <= 0 or p2.xp <= 0:
+        if p1.player_xp <= 0 or p2.player_xp <= 0:
             running = False
         all_sprites.update()
         screen.fill(BLACK)
@@ -572,6 +517,4 @@ def play():
         all_sprites.draw(screen)
         pygame.display.flip()
     pygame.quit()
-
-
 play()
