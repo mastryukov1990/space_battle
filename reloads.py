@@ -1,7 +1,7 @@
 import pygame
 
 
-class Reload_Super_Energy(pygame.sprite.Sprite):
+class ReloadSuperBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, p):
         pygame.sprite.Sprite.__init__(self)
         self.p = p
@@ -35,7 +35,7 @@ class Reload_Super_Energy(pygame.sprite.Sprite):
              self.height))
 
 
-class Reload_Bullets(pygame.sprite.Sprite):
+class ReloadBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, p):
         pygame.sprite.Sprite.__init__(self)
         self.p = p
@@ -65,4 +65,4 @@ class Reload_Bullets(pygame.sprite.Sprite):
             (self.p.energy
              * self.a,
              self.height)
-                                )
+        )

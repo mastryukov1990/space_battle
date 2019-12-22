@@ -37,31 +37,30 @@ class Button_Versus(pygame.sprite.Sprite):
                 land.play()
                 print(1)
 
-class LAND(pygame.sprite.Sprite):
-    def __init__(self):
 
-        self.t = pygame.init()
 
-        self.window = pygame.display.set_mode((800, 600))
 
-        self.sheldon = Button_Versus(10, 10, 100, 100)
+t = pygame.init()
 
-        self.all_sprites = pygame.sprite.Group()
-        self.all_sprites.add(self.sheldon)
+window = pygame.display.set_mode((800, 600))
 
-        self.clock = pygame.time.Clock()
-        self.running = True
+sheldon = Button_Versus(10, 10, 100, 100)
 
-        while self.running:
-            self.clock.tick(FPS)
+all_sprites1 = pygame.sprite.Group()
+all_sprites1.add(sheldon)
+
+clock = pygame.time.Clock()
+running = True
+while running:
+            clock.tick(FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or \
                         (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                    self.running = False
+                    running = False
 
-            self.window.fill(BLACK)
-            self.all_sprites.update()
-            self.all_sprites.draw(self.window)
+            window.fill(BLACK)
+            all_sprites1.update()
+            all_sprites1.draw(window)
             pygame.display.flip()
-        pygame.quit()
-LAND()
+pygame.quit()
+
